@@ -69,7 +69,7 @@ function interpret(message) {
         } else if (/^(n+o{2,}t+\s?)+$/i.test(message.content) && settings[message.server.id].noot) {
             mybot.sendMessage(message, message.content + " " + message.content);
         } else if (/^\/\/help$/i.test(message.content)) {
-            mybot.reply(message, "\n//calc [calculation] - Calculates the statement\n//info - Gives info for the bot\nnoot or any variation - Repeats your message twice\n//settings - Displays the current bot settings\n//anonymous [message] - Sends an anonyous message\n//code - Sends the code of the bot\n//adm [adm command] - Performs an admin command. **Bot admins only**");
+            mybot.reply(message, "\n//calc [calculation] - Calculates the statement\n//info - Gives info for the bot\nnoot or any variation - Repeats your message twice\n//settings - Displays the current bot settings\n//anonymous [message] - Sends an anonyous message\n//code - Sends the code of the bot\n//github - Sends a link to the bot github\n//adm [adm command] - Performs an admin command. **Bot admins only**");
         } else if (/^\/\/settings$/i.test(message.content)) {
             mybot.reply(message, "\n```" + JSON.stringify(settings[message.server.id]) + "```");
         } else if (/^\/\/anonymous .+/i.test(message.content) && settings[message.server.id].anonymous && !del) {
