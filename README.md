@@ -1,2 +1,2 @@
-# The-Bot-of-Hope-and-Wisdom
+# The Bot of Hope and Wisdom
 A discord bot.
