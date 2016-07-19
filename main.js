@@ -64,6 +64,8 @@ function interpret(message) {
             mybot.sendMessage(message, "The Bot of Hope and Wisdom - by " + mybot.users.get("id", "201765854990434304").mention());
         } else if (/^\/\/code$/i.test(message.content) && grand.code) {
             mybot.sendMessage(message, "Here is my code: ", {file:"./main.js"});
+        } else if (/^\/\/github$/i.test(message.content) && grand.github) {
+            mybot.sendMessage(message, "Here is my github: \nhttps://github.com/Aplet123/The-Bot-of-Hope-and-Wisdom");
         } else if (/^(n+o{2,}t+\s?)+$/i.test(message.content) && settings[message.server.id].noot) {
             mybot.sendMessage(message, message.content + " " + message.content);
         } else if (/^\/\/help$/i.test(message.content)) {
