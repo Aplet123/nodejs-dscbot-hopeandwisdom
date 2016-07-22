@@ -140,7 +140,7 @@ function interpret(message) {
             } else if (/^uncensor\s.+/i.test(text)) {
                 del = false;
                 censored[message.server.id] = censored[message.server.id].filter(v => v !== text.replace(/^uncensor\s/i, ""));
-                fs.writeFileSync("info/censored.json", JSON.stringify(censored[message.server.id]));
+                fs.writeFileSync("info/censored.json", JSON.stringify(censored));
                 console.log("Uncensored word: \n" + text.replace(/^uncensor\s/i, "") + "\nOn command of ID: \n" + message.author.id);
                 mybot.reply(message, "\nNow uncensored word: \n```" + text.replace(/^uncensor\s/i, "") + "```", { tts: false }, function(err, msg) {
                     mybot.deleteMessage(msg, { wait: 3000 });
