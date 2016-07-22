@@ -228,6 +228,11 @@ function interpret(message) {
                     mybot.deleteMessages(log);
                     mybot.deleteMessage(message);
                 });
+            } else if (/^clrusr\s\d+/.test(text)) {
+                mybot.getChannelLogs(message, Infinity, { before: message }, function(err, log) {
+                    mybot.deleteMessages(log.filter(v => v.author.id === text.match(/\d+/)[0]));
+                    mybot.deleteMessage(message);
+                });
             } else if (/^anymson$/i.test(text)) {
                 settings[message.server.id].anonymous = true;
                 fs.writeFileSync("info/settings.json", JSON.stringify(settings));
