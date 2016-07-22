@@ -15,8 +15,6 @@ var token = JSON.parse(fs.readFileSync("./info/auth.json", "utf8")).token;
 
 var mybot = new Discord.Client();
 
-Object.freeze(Math);
-
 function setup(id) {
     admins[id] = JSON.parse(fs.readFileSync("./default/admins.json"));
     banned[id] = JSON.parse(fs.readFileSync("./default/banned.json"));
