@@ -61,10 +61,10 @@ function interpret(message) {
         } else if (/^\/\/info$/i.test(message.content)) {
             mybot.sendMessage(message, "The Bot of Hope and Wisdom - by " + mybot.users.get("id", "201765854990434304").mention());
         } else if (/^\/\/code$/i.test(message.content) && grand.code) {
-            mybot.sendMessage(message, "Here is my code: ", {file:"./main.js"});
+            mybot.sendMessage(message, "Here is my code: ", { file: "./main.js" });
         } else if (/^\/\/github$/i.test(message.content) && grand.github) {
             mybot.sendMessage(message, "Here is my github: \nhttps://github.com/Aplet123/The-Bot-of-Hope-and-Wisdom");
-        } else if (/^((n+o{2,}t+)|(h+i+)|(h+e+l{2,}o+)|🍳\s*)+$/i.test(message.content) && settings[message.server.id].noot) {
+        } else if (/^(([nN]+[oO]{2,}[tT]+)|([hH]+[iI]+)|([hH]+[eE]+[lL]{2,}[oO]+)|🍳\s*)+$/i.test(message.content) && settings[message.server.id].noot) {
             mybot.sendMessage(message, message.content + " " + message.content);
         } else if (/^\/\/help$/i.test(message.content)) {
             mybot.reply(message, "\n//calc [calculation] - Calculates the statement\n//info - Gives info for the bot\nnoot, hi, hello, 🍳, or any variation - Repeats your message twice\n//settings - Displays the current bot settings\n//anonymous [message] - Sends an anonyous message\n//code - Sends the code of the bot\n//github - Sends a link to the bot github\n//adm [adm command] - Performs an admin command. **Bot admins only**");
@@ -146,16 +146,16 @@ function interpret(message) {
                 mybot.deleteMessage(message, { wait: 3000 });
             } else if (/^cnsimm\s\d+/i.test(text)) {
                 censorimmune[message.server.id].push(text.replace(/^cnsimm\s/i, ""));
-                fs.writeFileSync("info/censorimmune.json", JSON.stringify(censorimmune[message.server.id]));
+                fs.writeFileSync("info/censorimmune.json", JSON.stringify(censorimmune));
                 console.log("Censor-immune-ized ID: \n" + text.replace(/^cnsimm\s/i, "") + "\nOn command of ID: \n" + message.author.id);
                 mybot.reply(message, "\nNow censor-immune-ized ID: \n```" + text.replace(/^cnsimm\s/i, "") + "```");
             } else if (/^uncnsimm\s\d+/i.test(text)) {
                 censorimmune[message.server.id] = censorimmune[message.server.id].filter(v => v !== text.replace(/^uncnsimm\s/i, ""));
-                fs.writeFileSync("info/censorimmune.json", JSON.stringify(censorimmune[message.server.id]));
+                fs.writeFileSync("info/censorimmune.json", JSON.stringify(censorimmune));
                 console.log("Uncensor-immune-ized ID: \n" + text.replace(/^uncnsimm\s/i, "") + "\nOn command of ID: \n" + message.author.id);
                 mybot.reply(message, "\nNow uncensor-immune-ized ID: \n```" + text.replace(/^uncnsimm\s/i, "") + "```");
             } else if (/^censorimmune$/i.test(text)) {
-                mybot.reply(message, "\nThe following IDs are censor immune \n```" + censorimmune + "```");
+                mybot.reply(message, "\nThe following IDs are censor immune \n```" + censorimmune[message.server.id] + "```");
             } else if (/^cnson$/i.test(text)) {
                 settings[message.server.id].censor = true;
                 fs.writeFileSync("info/settings.json", JSON.stringify(settings));
@@ -259,12 +259,12 @@ mybot.on("messageUpdated", function(b, a) {
 });
 mybot.on("serverNewMember", function(s, u) {
     if (settings[s.id].welcome) {
-        mybot.sendMessage(s, "Say hello to " + u.mention());
+        mybot.sendMessage(s, "Say hello to " + u.mention() + "!");
     }
 });
-mybot.on("userBanned", function(u, s) {
+mybot.on("serverMemberRemoved", function(s, u) {
     if (settings[s.id].ban) {
-        mybot.sendMessage(s, "Say bye-bye to " + u.username);
+        mybot.sendMessage(s, "Say bye-bye to " + u.username + "!");
     }
 });
 
