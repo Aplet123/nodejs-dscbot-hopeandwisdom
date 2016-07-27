@@ -1,4 +1,7 @@
 //jshint esversion:6
+
+'use strict';
+
 var Discord = require("discord.js");
 var fs = require("fs");
 
@@ -14,6 +17,20 @@ var servers = JSON.parse(fs.readFileSync("./info/servers.json", "utf8"));
 var token = JSON.parse(fs.readFileSync("./info/auth.json", "utf8")).token;
 
 var mybot = new Discord.Client();
+
+function isSelf(id) {
+    return id === mybot.user.id;
+}
+
+function JSONfriendify(obj, blk) {
+    var rtn = {};
+    for (let v in obj) {
+        if (blk.every(val => val !== v)) {
+            rtn[v] = obj[v];
+        }
+    }
+    return rtn;
+}
 
 function setup(id) {
     admins[id] = JSON.parse(fs.readFileSync("./default/admins.json"));
@@ -37,14 +54,13 @@ mybot.on("ready", function() {
 });
 
 function interpret(message) {
-    var isSelf = message.author.id === "202902913087963137";
     var del = false;
-    if (muted[message.server.id].some(v => v === message.author.id) && !isSelf && settings[message.server.id].muting) {
+    if (muted[message.server.id].some(v => v === message.author.id) && !isSelf(message.author.id) && settings[message.server.id].muting) {
         mybot.deleteMessage(message, { wait: 0 });
-    } else if (!isSelf && censorimmune[message.server.id].every(v => v !== message.author.id) && settings[message.server.id].censor) {
+    } else if (!isSelf(message.author.id) && censorimmune[message.server.id].every(v => v !== message.author.id) && settings[message.server.id].censor) {
         censored[message.server.id].map(v => del = message.content.match(new RegExp("\\b[^\\s\\n]*" + v + "[^\\s\\n]*\\b", "gi")) !== null ? true : del);
     }
-    if (banned[message.server.id].every(v => v !== message.author.id) && muted[message.server.id].every(v => v !== message.author.id) && !isSelf) {
+    if (banned[message.server.id].every(v => v !== message.author.id) && muted[message.server.id].every(v => v !== message.author.id) && !isSelf(message.author.id)) {
         if (/^\/\/calc\s/i.test(message.content)) {
             var txt = message.content.replace(/\/\/calc\s/i, "");
             var mat = txt.match(/(?:Math\.\w+)|[()+\-*/&|^%<>=,]|(?:\d+\.?\d*(?:e\d+)?)/g);
@@ -64,10 +80,20 @@ function interpret(message) {
             mybot.sendMessage(message, "Here is my code: ", { file: "./main.js" });
         } else if (/^\/\/github$/i.test(message.content) && grand.github) {
             mybot.sendMessage(message, "Here is my github: \nhttps://github.com/Aplet123/The-Bot-of-Hope-and-Wisdom");
+        } else if (/^\/\/uinfo$/i.test(message.content)) {
+            mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(message.author, ["client", "typing", "voiceState", "voiceChannel"])) + "\n```", { file: { file: message.author.avatarURL } });
+        } else if (/^\/\/cinfo$/i.test(message.content)) {
+            mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(message.channel, ["client", "permissionOverwrites", "lastMessage", "messages", "server", "lastMessageID"])) + "\n```");
+        } else if (/^\/\/sinfo$/i.test(message.content)) {
+            mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(message.server, ["client", "members", "memberMap", "channels", "roles", "afkChannel", "defaultChannel", "owner"])) + "\n```", { file: { file: message.server.iconURL === null ? undefined : message.server.iconURL } });
+        } else if (/^\/\/uget-\w+\s.+/i.test(message.content)) {
+            mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(mybot.users.get(message.content.match(/^\/\/uget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/uget-\w+\s(.+)$/i)[1]), ["client", "typing", "voiceState", "voiceChannel"])) + "\n```", { file: { file: mybot.users.get(message.content.match(/^\/\/uget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/uget-\w+\s(.+)$/i)[1]).avatarURL } });
+        } else if (/^\/\/cget-\w+\s.+/i.test(message.content) && mybot.channels.get(message.content.match(/^\/\/cget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/cget-\w+\s(.+)$/i)[1]).server.id === message.server.id) {
+            mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(mybot.channels.get(message.content.match(/^\/\/cget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/cget-\w+\s(.+)$/i)[1]), ["client", "permissionOverwrites", "lastMessage", "messages", "server", "lastMessageID"])) + "\n```");
         } else if (/^(([nN]+[oO]{2,}[tT]+)|([hH]+[iI]+)|([hH]+[eE]+[lL]{2,}[oO]+)|🍳\s*)+$/i.test(message.content) && settings[message.server.id].noot) {
             mybot.sendMessage(message, message.content + " " + message.content);
         } else if (/^\/\/help$/i.test(message.content)) {
-            mybot.reply(message, "\n//calc [calculation] - Calculates the statement\n//info - Gives info for the bot\nnoot, hi, hello, 🍳, or any variation - Repeats your message twice\n//settings - Displays the current bot settings\n//anonymous [message] - Sends an anonyous message\n//code - Sends the code of the bot\n//github - Sends a link to the bot github\n//adm [adm command] - Performs an admin command. **Bot admins only**");
+            mybot.reply(message, "\n//calc [calculation] - Calculates the statement\n//info - Gives info for the bot\nnoot, hi, hello, 🍳, or any variation - Repeats your message twice\n//settings - Displays the current bot settings\n//anonymous [message] - Sends an anonyous message\n//code - Sends the code of the bot\n//github - Sends a link to the bot github\n//uinfo - Sends the author's user info\n//cinfo - Sends the channel info\n//sinfo - Sends the server info\n//uget-[property] [value] - Gets the user with the property that has the specified value\n//cget-[property] [value] - Gets the channel with the property that has the specified value\n//adm [adm command] - Performs an admin command. **Bot admins only**");
         } else if (/^\/\/settings$/i.test(message.content)) {
             mybot.reply(message, "\n```" + JSON.stringify(settings[message.server.id]) + "```");
         } else if (/^\/\/anonymous .+/i.test(message.content) && settings[message.server.id].anonymous && !del) {
