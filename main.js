@@ -81,15 +81,23 @@ function interpret(message) {
         } else if (/^\/\/github$/i.test(message.content) && grand.github) {
             mybot.sendMessage(message, "Here is my github: \nhttps://github.com/Aplet123/The-Bot-of-Hope-and-Wisdom");
         } else if (/^\/\/uinfo$/i.test(message.content)) {
-            mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(message.author, ["client", "typing", "voiceState", "voiceChannel"])) + "\n```", { file: { file: message.author.avatarURL } });
+            mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(message.author, ["client", "typing", "voiceState", "voiceChannel"])) + "\n```", { file: { file: message.author.avatarURL === null ? "./info/noimage.png" : message.author.avatarURL } });
         } else if (/^\/\/cinfo$/i.test(message.content)) {
             mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(message.channel, ["client", "permissionOverwrites", "lastMessage", "messages", "server", "lastMessageID"])) + "\n```");
         } else if (/^\/\/sinfo$/i.test(message.content)) {
-            mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(message.server, ["client", "members", "memberMap", "channels", "roles", "afkChannel", "defaultChannel", "owner"])) + "\n```", { file: { file: message.server.iconURL === null ? undefined : message.server.iconURL } });
+            mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(message.server, ["client", "members", "memberMap", "channels", "roles", "afkChannel", "defaultChannel", "owner"])) + "\n```", { file: { file: message.server.iconURL === null ? "./info/noimage.png" : message.server.iconURL } });
         } else if (/^\/\/uget-\w+\s.+/i.test(message.content)) {
-            mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(mybot.users.get(message.content.match(/^\/\/uget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/uget-\w+\s(.+)$/i)[1]), ["client", "typing", "voiceState", "voiceChannel"])) + "\n```", { file: { file: mybot.users.get(message.content.match(/^\/\/uget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/uget-\w+\s(.+)$/i)[1]).avatarURL } });
+            try {
+                mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(mybot.users.get(message.content.match(/^\/\/uget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/uget-\w+\s(.+)$/i)[1]), ["client", "typing", "voiceState", "voiceChannel"])) + "\n```", { file: { file: mybot.users.get(message.content.match(/^\/\/uget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/uget-\w+\s(.+)$/i)[1]).avatarURL === null ? "./info/noimage.png" : mybot.users.get(message.content.match(/^\/\/uget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/uget-\w+\s(.+)$/i)[1]).avatarURL } });
+            } catch (err) {
+                mybot.reply(message, "There was an error in your request.");
+            }
         } else if (/^\/\/cget-\w+\s.+/i.test(message.content) && mybot.channels.get(message.content.match(/^\/\/cget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/cget-\w+\s(.+)$/i)[1]).server.id === message.server.id) {
-            mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(mybot.channels.get(message.content.match(/^\/\/cget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/cget-\w+\s(.+)$/i)[1]), ["client", "permissionOverwrites", "lastMessage", "messages", "server", "lastMessageID"])) + "\n```");
+            try {
+                mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(mybot.channels.get(message.content.match(/^\/\/cget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/cget-\w+\s(.+)$/i)[1]), ["client", "permissionOverwrites", "lastMessage", "messages", "server", "lastMessageID"])) + "\n```");
+            } catch(err) {
+                mybot.reply(message, "There was an error in your request.");
+            }
         } else if (/^(([nN]+[oO]{2,}[tT]+)|([hH]+[iI]+)|([hH]+[eE]+[lL]{2,}[oO]+)|🍳\s*)+$/i.test(message.content) && settings[message.server.id].noot) {
             mybot.sendMessage(message, message.content + " " + message.content);
         } else if (/^\/\/help$/i.test(message.content)) {
