@@ -93,7 +93,20 @@ function interpret(message) {
         } else if (/^(([nN]+[oO]{2,}[tT]+)|([hH]+[iI]+)|([hH]+[eE]+[lL]{2,}[oO]+)|🍳\s*)+$/i.test(message.content) && settings[message.server.id].noot) {
             mybot.sendMessage(message, message.content + " " + message.content);
         } else if (/^\/\/help$/i.test(message.content)) {
-            mybot.reply(message, "\n//calc [calculation] - Calculates the statement\n//info - Gives info for the bot\nnoot, hi, hello, 🍳, or any variation - Repeats your message twice\n//settings - Displays the current bot settings\n//anonymous [message] - Sends an anonyous message\n//code - Sends the code of the bot\n//github - Sends a link to the bot github\n//uinfo - Sends the author's user info\n//cinfo - Sends the channel info\n//sinfo - Sends the server info\n//uget-[property] [value] - Gets the user with the property that has the specified value\n//cget-[property] [value] - Gets the channel with the property that has the specified value\n//adm [adm command] - Performs an admin command. **Bot admins only**");
+            mybot.reply(message, `
+//calc [calculation] - Calculates the statement
+//info - Gives info for the bot
+noot, hi, hello, 🍳, or any variation - Repeats your message twice
+//settings - Displays the current bot settings
+//anonymous [message] - Sends an anonyous message
+//code - Sends the code of the bot
+//github - Sends a link to the bot github
+//uinfo - Sends the author's user info
+//cinfo - Sends the channel info
+//sinfo - Sends the server info
+//uget-[property] [value] - Gets the user with the property that has the specified value
+//cget-[property] [value] - Gets the channel with the property that has the specified value
+//adm [adm command] - Performs an admin command. **Bot admins only**`);
         } else if (/^\/\/settings$/i.test(message.content)) {
             mybot.reply(message, "\n```" + JSON.stringify(settings[message.server.id]) + "```");
         } else if (/^\/\/anonymous .+/i.test(message.content) && settings[message.server.id].anonymous && !del) {
@@ -110,7 +123,39 @@ function interpret(message) {
                     });
                 }
             } else if (text === "help") {
-                mybot.reply(message, "\nlogout - Logs out the bot\nban [user ID] - Bans the specified ID from using the bot.\nunban [user ID] - Unbans the specified ID from using the bot.\nadm [user ID] - Makes the specified ID a bot administrator\nunadm [user ID] - Removes bot administrator permissions from the specified ID\nmute [user ID] - Mutes the specified ID\nunmute [user ID] - Unmutes the specified ID\ncnsimm [user ID] - Makes the specified ID censor immune\nuncnsimm [user ID] - Makes the specified ID not censor immune\nbanned - Lists all banned IDs\nadmins - Lists all admin IDs\nmuted - Lists all muted IDs\ncensorimmune - Lists all censor immune IDs\ncensor [phrase] - Censors the specified phrase\nuncensor [phrase] - Uncensors the specified phrase\ncnson - Turns on censors\ncnsoff - Turns off censors\nmuteon - Turns on muting\nmuteoff - Turns off muting\nnooton - Turns noot on\nnootoff - Turns noot off\neditoff - Turns editing off\nediton - Turns editing on\nwelcomeon - Turns welcome on\nwelcomeoff - Turns welcome off\nbanon - Turns ban on\nbanoff - Turns ban off\nclr [number] - Clears the past amount of messages specified\nclrall - Clears all messages before loading more messages is needed\nclrusr [user ID] - Clears all messages from the specified user\nanymson - Turns anonymous on\nanymsoff - Turns anonymous off");
+                mybot.reply(message, `
+logout - Logs out the bot
+ban [user ID] - Bans the specified ID from using the bot.
+unban [user ID] - Unbans the specified ID from using the bot.
+adm [user ID] - Makes the specified ID a bot administrator
+unadm [user ID] - Removes bot administrator permissions from the specified ID
+mute [user ID] - Mutes the specified ID
+unmute [user ID] - Unmutes the specified ID
+cnsimm [user ID] - Makes the specified ID censor immune
+uncnsimm [user ID] - Makes the specified ID not censor immune
+banned - Lists all banned IDs
+admins - Lists all admin IDs
+muted - Lists all muted IDs
+censorimmune - Lists all censor immune IDs
+censor [phrase] - Censors the specified phrase
+uncensor [phrase] - Uncensors the specified phrase
+cnson - Turns on censors
+cnsoff - Turns off censors
+muteon - Turns on muting
+muteoff - Turns off muting
+nooton - Turns noot on
+nootoff - Turns noot off
+editoff - Turns editing off
+editon - Turns editing on
+welcomeon - Turns welcome on
+welcomeoff - Turns welcome off
+banon - Turns ban on
+banoff - Turns ban off
+clr [number] - Clears the past amount of messages specified
+clrall - Clears all messages before loading more messages is needed
+clrusr [user ID] - Clears all messages from the specified user
+anymson - Turns anonymous on
+anymsoff - Turns anonymous off`);
             } else if (/^ban\s\d+/i.test(text)) {
                 banned[message.server.id].push(text.replace(/^ban\s/i, ""));
                 fs.writeFileSync("info/banned.json", JSON.stringify(banned));
