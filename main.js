@@ -95,7 +95,7 @@ function interpret(message) {
         } else if (/^\/\/cget-\w+\s.+/i.test(message.content) && mybot.channels.get(message.content.match(/^\/\/cget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/cget-\w+\s(.+)$/i)[1]).server.id === message.server.id) {
             try {
                 mybot.sendMessage(message, "```\n" + JSON.stringify(JSONfriendify(mybot.channels.get(message.content.match(/^\/\/cget-(\w+)\s.+$/i)[1], message.content.match(/^\/\/cget-\w+\s(.+)$/i)[1]), ["client", "permissionOverwrites", "lastMessage", "messages", "server", "lastMessageID"])) + "\n```");
-            } catch(err) {
+            } catch (err) {
                 mybot.reply(message, "There was an error in your request.");
             }
         } else if (/^(([nN]+[oO]{2,}[tT]+)|([hH]+[iI]+)|([hH]+[eE]+[lL]{2,}[oO]+)|🍳\s*)+$/i.test(message.content) && settings[message.server.id].noot) {
@@ -332,8 +332,12 @@ anymsoff - Turns anonymous off`);
 }
 mybot.on("message", interpret);
 mybot.on("messageUpdated", function(b, a) {
-    if (settings[b.server.id].edit) {
-        interpret(a);
+    try {
+        if (settings[b.server.id].edit) {
+            interpret(a);
+        }
+    } catch (err) {
+
     }
 });
 mybot.on("serverNewMember", function(s, u) {
