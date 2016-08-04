@@ -185,7 +185,7 @@ _${info.alt}_`, { file: { file: info.img } }, function(err, msg) {
                 if (!error && response.statusCode == 200 && info.list.length > 0) {
                     mybot.sendMessage(message, `${info.list[0].definition}\n\n${info.list[0].example}`, {}, function(err, msg) {
                         if (err) {
-                            if (`${info.list[0].definition}\n\n${info.list[0].example}` >= 2000) {
+                            if (`${info.list[0].definition}\n\n${info.list[0].example}`.length >= 2000) {
                                 if (info.list[0].definition.length < 2000) {
                                     mybot.sendMessage(message, info.list[0].definition);
                                 } else {
