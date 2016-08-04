@@ -4,6 +4,7 @@
 
 var Discord = require("discord.js");
 var fs = require("fs");
+var request = require("request");
 
 var admins = JSON.parse(fs.readFileSync("./info/admins.json", "utf8"));
 var banned = JSON.parse(fs.readFileSync("./info/banned.json", "utf8"));
@@ -98,6 +99,16 @@ function interpret(message) {
             } catch (err) {
                 mybot.reply(message, "There was an error in your request.");
             }
+        } else if (/^\/\/xkcd\s\d+$/i.test(message.content)) {
+            request("https://xkcd.com/" + message.content.match(/\d+/)[0] + "/info.0.json", function(error, response, body) {
+                var info = JSON.parse(body);
+                if (!error && response.statusCode == 200) {
+                    mybot.sendMessage(message, `**${info.safe_title}**
+_${info.alt}_`, {file: {file: info.img}});
+                } else {
+                    mybot.reply("Sorry, but there was an error in your request.");
+                }
+            });
         } else if (/^(([nN]+[oO]{2,}[tT]+)|([hH]+[iI]+)|([hH]+[eE]+[lL]{2,}[oO]+)|🍳\s*)+$/i.test(message.content) && settings[message.server.id].noot) {
             mybot.sendMessage(message, message.content + " " + message.content);
         } else if (/^\/\/help$/i.test(message.content)) {
@@ -114,6 +125,7 @@ noot, hi, hello, 🍳, or any variation - Repeats your message twice
 //sinfo - Sends the server info
 //uget-[property] [value] - Gets the user with the property that has the specified value
 //cget-[property] [value] - Gets the channel with the property that has the specified value
+//xkcd [comic number] - Gets the specified xkcd comic.
 //adm [adm command] - Performs an admin command. **Bot admins only**`);
         } else if (/^\/\/settings$/i.test(message.content)) {
             mybot.reply(message, "\n```" + JSON.stringify(settings[message.server.id]) + "```");
