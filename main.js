@@ -143,7 +143,7 @@ _${info.alt}_`, { file: { file: info.img } }, function(err, msg) {
                     mybot.reply(message, "Sorry, but there was an error in your request.");
                 }
             });
-        } else if (/^\/\/(famous|movies)quote$/.test(message.content)) {
+        } else if (/^\/\/(famous|movies)quote$/i.test(message.content)) {
             request({
                 url: "https://andruxnet-random-famous-quotes.p.mashape.com/?cat=" + message.content.match(/famous|movies/)[0],
                 headers: {
@@ -168,6 +168,40 @@ _${info.alt}_`, { file: { file: info.img } }, function(err, msg) {
                     mybot.reply(message, "Sorry, but there was an error in your request.");
                 }
             });
+        } else if (/^\/\/urban\s.+$/i.test(message.content)) {
+            request({
+                url: "https://mashape-community-urban-dictionary.p.mashape.com/define?term=" + message.content.match(/^\/\/urban\s(.+)$/i)[1],
+                headers: {
+                    "X-Mashape-Key": JSON.parse(fs.readFileSync("./info/auth.json", "utf8")).apikey,
+                    "Accept": "text/plain"
+                }
+            }, function(error, response, body) {
+                var info;
+                try {
+                    info = JSON.parse(body);
+                } catch (err) {
+                    error = true;
+                }
+                if (!error && response.statusCode == 200 && info.list.length > 0) {
+                    mybot.sendMessage(message, `${info.list[0].definition}\n\n${info.list[0].example}`, {}, function(err, msg) {
+                        if (err) {
+                            if (`${info.list[0].definition}\n\n${info.list[0].example}` >= 2000) {
+                                if (info.list[0].definition.length < 2000) {
+                                    mybot.sendMessage(message, info.list[0].definition);
+                                } else {
+                                    mybot.reply(message, "Sorry, but the definition is too long. You can find the definition here: http://www.urbandictionary.com/define.php?term=" + message.content.match(/^\/\/urban\s(.+)$/i)[1]);
+                                }
+                            } else {
+                                mybot.reply(message, "Sorry, but there was an error in your request.");
+                            }
+                        }
+                    });
+                } else if (info.list.length === 0) {
+                    mybot.reply(message, "Sorry, but the specified word is undefined.");
+                } else {
+                    mybot.reply(message, "Sorry, but there was an error in your request.");
+                }
+            });
         } else if (/^(([nN]+[oO]{2,}[tT]+)|([hH]+[iI]+)|([hH]+[eE]+[lL]{2,}[oO]+)|🍳\s*)+$/i.test(message.content) && settings[message.server.id].noot) {
             mybot.sendMessage(message, message.content + " " + message.content);
         } else if (/^\/\/help$/i.test(message.content)) {
@@ -188,6 +222,7 @@ noot, hi, hello, 🍳, or any variation - Repeats your message twice
 //define [word] - Gives the definition of the specified word
 //famousquote - Gives a random famous quote
 //moviesquote - Gives a random quote from the movies
+//urban [word] - Gives the urban dictionary definition of the specified word
 //adm [adm command] - Performs an admin command. **Bot admins only**`);
         } else if (/^\/\/settings$/i.test(message.content)) {
             mybot.reply(message, "\n```" + JSON.stringify(settings[message.server.id]) + "```");
