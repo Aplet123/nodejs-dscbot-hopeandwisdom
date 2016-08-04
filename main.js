@@ -112,11 +112,35 @@ function interpret(message) {
                     mybot.sendMessage(message, `**${info.safe_title}**
 _${info.alt}_`, { file: { file: info.img } }, function(err, msg) {
                         if (err) {
-                            mybot.reply("Sorry, but there was an error in your request.");
+                            mybot.reply(message, "Sorry, but there was an error in your request.");
                         }
                     });
                 } else {
-                    mybot.reply("Sorry, but there was an error in your request.");
+                    mybot.reply(message, "Sorry, but there was an error in your request.");
+                }
+            });
+        } else if (/^\/\/define\s\w+$/i.test(message.content)) {
+            request("http://wordnetweb.princeton.edu/perl/webwn?s=" + message.content.match(/^\/\/define\s(\w+)$/i)[1], function(error, response, body) {
+                var $;
+                try {
+                    $ = cheerio.load(body);
+                } catch (err) {
+                    error = true;
+                }
+                if (!error && response.statusCode == 200 && $("ul").length > 0) {
+                    mybot.sendMessage(message, $("ul").text(), {}, function(err, msg) {
+                        if (err) {
+                            if($("ul").text().length < 2000) {
+                                mybot.reply(message, "Sorry, but there was an error in your request.");
+                            } else {
+                                mybot.reply(message, "Sorry, but the definition exceeds the 2000 character limit. \nYou can go the this link to find the definition: " + "http://wordnetweb.princeton.edu/perl/webwn?s=" + message.content.match(/^\/\/define\s(\w+)$/i)[1]);
+                            }
+                        }
+                    });
+                } else if ($("ul").length === 0) {
+                    mybot.reply(message, "Sorry, but the specified word is not defined.");
+                } else {
+                    mybot.reply(message, "Sorry, but there was an error in your request.");
                 }
             });
         } else if (/^(([nN]+[oO]{2,}[tT]+)|([hH]+[iI]+)|([hH]+[eE]+[lL]{2,}[oO]+)|🍳\s*)+$/i.test(message.content) && settings[message.server.id].noot) {
@@ -136,6 +160,7 @@ noot, hi, hello, 🍳, or any variation - Repeats your message twice
 //uget-[property] [value] - Gets the user with the property that has the specified value
 //cget-[property] [value] - Gets the channel with the property that has the specified value
 //xkcd [comic number] - Gets the specified xkcd comic
+//define [word] - Gives the definition of the specified word
 //adm [adm command] - Performs an admin command. **Bot admins only**`);
         } else if (/^\/\/settings$/i.test(message.content)) {
             mybot.reply(message, "\n```" + JSON.stringify(settings[message.server.id]) + "```");
