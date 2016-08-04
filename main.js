@@ -130,7 +130,7 @@ _${info.alt}_`, { file: { file: info.img } }, function(err, msg) {
                 if (!error && response.statusCode == 200 && $("ul").length > 0) {
                     mybot.sendMessage(message, $("ul").text(), {}, function(err, msg) {
                         if (err) {
-                            if($("ul").text().length < 2000) {
+                            if ($("ul").text().length < 2000) {
                                 mybot.reply(message, "Sorry, but there was an error in your request.");
                             } else {
                                 mybot.reply(message, "Sorry, but the definition exceeds the 2000 character limit. \nYou can go the this link to find the definition: " + "http://wordnetweb.princeton.edu/perl/webwn?s=" + message.content.match(/^\/\/define\s(\w+)$/i)[1]);
@@ -139,6 +139,31 @@ _${info.alt}_`, { file: { file: info.img } }, function(err, msg) {
                     });
                 } else if ($("ul").length === 0) {
                     mybot.reply(message, "Sorry, but the specified word is not defined.");
+                } else {
+                    mybot.reply(message, "Sorry, but there was an error in your request.");
+                }
+            });
+        } else if (/^\/\/(famous|movies)quote$/.test(message.content)) {
+            request({
+                url: "https://andruxnet-random-famous-quotes.p.mashape.com/?cat=" + message.content.match(/famous|movies/)[0],
+                headers: {
+                    "X-Mashape-Key": JSON.parse(fs.readFileSync("./info/auth.json", "utf8")).apikey,
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Accept": "application/json"
+                }
+            }, function(error, response, body) {
+                var info;
+                try {
+                    info = JSON.parse(body);
+                } catch (err) {
+                    error = true;
+                }
+                if (!error && response.statusCode == 200) {
+                    mybot.sendMessage(message, `_"${info.quote}"_ - ${info.author}`, {}, function(err, msg) {
+                        if (err) {
+                            mybot.reply(message, "Sorry, but there was an error in your request.");
+                        }
+                    });
                 } else {
                     mybot.reply(message, "Sorry, but there was an error in your request.");
                 }
@@ -161,6 +186,8 @@ noot, hi, hello, 🍳, or any variation - Repeats your message twice
 //cget-[property] [value] - Gets the channel with the property that has the specified value
 //xkcd [comic number] - Gets the specified xkcd comic
 //define [word] - Gives the definition of the specified word
+//famousquote - Gives a random famous quote
+//moviesquote - Gives a random quote from the movies
 //adm [adm command] - Performs an admin command. **Bot admins only**`);
         } else if (/^\/\/settings$/i.test(message.content)) {
             mybot.reply(message, "\n```" + JSON.stringify(settings[message.server.id]) + "```");
