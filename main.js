@@ -5,6 +5,7 @@
 var Discord = require("discord.js");
 var fs = require("fs");
 var request = require("request");
+var cheerio = require("cheerio");
 
 var admins = JSON.parse(fs.readFileSync("./info/admins.json", "utf8"));
 var banned = JSON.parse(fs.readFileSync("./info/banned.json", "utf8"));
@@ -101,10 +102,19 @@ function interpret(message) {
             }
         } else if (/^\/\/xkcd\s\d+$/i.test(message.content)) {
             request("https://xkcd.com/" + message.content.match(/\d+/)[0] + "/info.0.json", function(error, response, body) {
-                var info = JSON.parse(body);
+                var info;
+                try {
+                    info = JSON.parse(body);
+                } catch (err) {
+                    error = true;
+                }
                 if (!error && response.statusCode == 200) {
                     mybot.sendMessage(message, `**${info.safe_title}**
-_${info.alt}_`, {file: {file: info.img}});
+_${info.alt}_`, { file: { file: info.img } }, function(err, msg) {
+                        if (err) {
+                            mybot.reply("Sorry, but there was an error in your request.");
+                        }
+                    });
                 } else {
                     mybot.reply("Sorry, but there was an error in your request.");
                 }
@@ -125,7 +135,7 @@ noot, hi, hello, 🍳, or any variation - Repeats your message twice
 //sinfo - Sends the server info
 //uget-[property] [value] - Gets the user with the property that has the specified value
 //cget-[property] [value] - Gets the channel with the property that has the specified value
-//xkcd [comic number] - Gets the specified xkcd comic.
+//xkcd [comic number] - Gets the specified xkcd comic
 //adm [adm command] - Performs an admin command. **Bot admins only**`);
         } else if (/^\/\/settings$/i.test(message.content)) {
             mybot.reply(message, "\n```" + JSON.stringify(settings[message.server.id]) + "```");
