@@ -1,0 +1,29 @@
+{
+  "name": "nodejs-dscbot-hopeandwisdom",
+  "version": "0.0.1",
+  "description": "The Bot of Hope and Wisdom",
+  "main": "main.js",
+  "dependencies": {
+    "discord.js": "^8.1.0",
+    "request": "^2.74.0",
+    "cheerio": "^0.22.0"
+  },
+  "engine": {
+    "node": "*",
+    "npm": "*"
+  },
+  "scripts": {
+    "start": "node server.js",
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Aplet123/nodejs-dscbot-hopeandwisdom.git"
+  },
+  "author": "Aplet123",
+  "license": "None",
+  "bugs": {
+    "url": "http://github.com/Aplet123/nodejs-dscbot-hopeandwisdom/issues"
+  },
+  "homepage": "http://github.com/Aplet123/nodejs-dscbot-hopeandwisdom"
+}
